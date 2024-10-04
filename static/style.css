@@ -1,0 +1,9 @@
+.video-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    img {
+        height: 720px;
+    }
+}

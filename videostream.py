@@ -18,6 +18,8 @@ class VideoStream:
         
         (self.grabbed, self.frame) = self.stream.read()
         self.stopped = False
+        
+        self.qrcodes = []
         time.sleep(2.0)
     
     def start(self):
@@ -29,8 +31,9 @@ class VideoStream:
     
     def update(self):
         print("read")
-        sync = 0
-        sync_time = time.time()
+        sync_counter = 0
+        sync_start_time = time.time()
+        ignore_sleep = False
 
         while True:
             if self.stopped:
@@ -39,33 +42,25 @@ class VideoStream:
             start_time = time.time()
             (self.grabbed, self.frame) = self.stream.read()
 
-            sleep_time = max(0, self.frame_duration - (time.time() - start_time))
-
-            
-            if time.time() - sync_time > 10 and sync > 100:
-                # deve ficar 5 segundos em sincronia
-                
-
-                print("sync_time")
-                sync = 0
-                sync_time = time.time() 
-            if sync < 100:
-                sync += 1
-                print("sync:", sync)
+            if not ignore_sleep:
+                sleep_time = max(0, self.frame_duration - (time.time() - start_time))
                 time.sleep(sleep_time)
-                
 
-            # print("frame_duration:", self.frame_duration)
-            # print("sleep_time:", sleep_time)
-            # print("duration:", (time.time() - start_time))
-                
+            if time.time() - sync_start_time >= 10:
+                sync_counter += 5
+                ignore_sleep = True
+
+                if sync_counter >= 100:
+                    sync_counter = 0
+                    sync_start_time = time.time()
+                    ignore_sleep = False
             
     def read(self):
         return self.frame
     
     def read_qr(self):
         qr_codes = decode(self.frame)
-        self.frame_qr_code_data = []
+        frame_qr_code_data = []
         
         for qr_code in qr_codes:
             (x, y, w, h) = qr_code.rect
@@ -73,10 +68,12 @@ class VideoStream:
             qr_data = qr_code.data.decode('utf-8')
             cv2.putText(self.frame, qr_data, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
             
-            if qr_data not in self.frame_qr_code_data:
-                self.frame_qr_code_data.append(qr_data)
-            
-        return self.frame
+            frame_qr_code_data.append(qr_data)
+                
+        if len(frame_qr_code_data) >= 2:
+            self.qrcodes = frame_qr_code_data
+        
+        return (self.frame, frame_qr_code_data)
 
     
     def stop(self):
