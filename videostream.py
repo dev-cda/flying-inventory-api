@@ -1,15 +1,16 @@
-import cv2
 from pyzbar.pyzbar import decode
 from threading import Thread
+
+from config import settings
+
+import cv2
 import time
 import numpy as np
-
-myrtmp_addr = "http://192.168.1.60:8081/live/.m3u8"
 
 class VideoStream:
     def __init__(self):
         print("init")
-        self.stream = cv2.VideoCapture(myrtmp_addr)
+        self.stream = cv2.VideoCapture(settings.RTMP_ADDRESS)
         
         fps = self.stream.get(cv2.CAP_PROP_FPS)
         if fps == 0:
