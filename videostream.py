@@ -10,7 +10,8 @@ import numpy as np
 class VideoStream:
     def __init__(self):
         print("init")
-        self.stream = cv2.VideoCapture(settings.RTMP_ADDRESS)
+        # self.stream = cv2.VideoCapture(settings.RTMP_ADDRESS)
+        self.stream = cv2.VideoCapture(0)
         
         fps = self.stream.get(cv2.CAP_PROP_FPS)
         if fps == 0:
