@@ -36,10 +36,10 @@
 
     <script>
         const socket = io();
+        console.log(socket)
         const qrCodesElement = document.getElementById('qrCodes');
 
         socket.on('qr_code_data', (qrCodeData) => {
-            // remove the old QR codes
             while (qrCodesElement.firstChild) {
                 qrCodesElement.removeChild(qrCodesElement.firstChild);
             }
