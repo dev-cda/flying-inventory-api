@@ -2,7 +2,7 @@ import cv2
 from flask import Flask, render_template, Response
 from flask_cors import CORS
 from flask_socketio import SocketIO
-from videostream import VideoStream
+from service.VideoStream import VideoStream
 from loguru import logger
 import re
 
